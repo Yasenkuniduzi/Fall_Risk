@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>老年人跌倒风险预测系统 / Fall Risk Prediction System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>老年人跌倒风险预测系统 / Fall Risk Prediction System</h1>
+        
+        <!-- 错误提示放在更显眼的位置 -->
+        {% if error or errors %}
+        <div class="error-message">
+            {% if error %}
+                <p>{{ error }}</p>
+            {% endif %}
+            {% if errors %}
+                <ul>
+                    {% for error in errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+        {% endif %}
+        
+        <form method="POST" action="{{ url_for('predict') }}" id="predictionForm">
+            <!-- 基本信息部分 -->
+            <div class="form-section">
+                <h3 class="section-title">
+                    <span class="cn">基本信息</span>
+                    <span class="en">Basic Information</span>
+                </h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="name">姓名 / Name:</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="Age">年龄 / Age:</label>
+                        <input type="number" id="Age" name="Age" min="40" max="120" required>
+                    </div>
+                    <div class="form-group">
+                        <label>性别 / Sex:</label>
+                        <div class="radio-group">
+                            <input type="radio" id="sex1" name="Sex" value="1" required>
+                            <label for="sex1">男 / Male</label>
+                            <input type="radio" id="sex2" name="Sex" value="2" required>
+                            <label for="sex2">女 / Female</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>婚姻状况 / Marital Status:</label>
+                        <div class="radio-group">
+                            <input type="radio" id="marital1" name="Marital_status" value="1" required>
+                            <label for="marital1">已婚 / Married</label>
+                            <input type="radio" id="marital2" name="Marital_status" value="2" required>
+                            <label for="marital2">其他 / Other</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>居住地 / Residence:</label>
+                        <div class="radio-group">
+                            <input type="radio" id="residence1" name="Residence" value="1" required>
+                            <label for="residence1">城市 / Urban</label>
+                            <input type="radio" id="residence2" name="Residence" value="2" required>
+                            <label for="residence2">农村 / Rural</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 生活习惯 -->
+            <div class="form-section">
+                <h3 class="section-title">
+                    <span class="cn">生活习惯</span>
+                    <span class="en">Lifestyle</span>
+                </h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>吸烟 / Smoking:</label>
+                        <div class="radio-group">
+                            <input type="radio" id="smoking1" name="Smoking" value="1" required>
+                            <label for="smoking1">是 / Yes</label>
+                            <input type="radio" id="smoking2" name="Smoking" value="2" required>
+                            <label for="smoking2">否 / No</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>饮酒 / Drinking:</label>
+                        <div class="radio-group">
+                            <input type="radio" id="drinking1" name="Drinking" value="1" required>
+                            <label for="drinking1">是 / Yes</label>
+                            <input type="radio" id="drinking2" name="Drinking" value="2" required>
+                            <label for="drinking2">否 / No</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 身体状况 -->
+            <div class="form-section">
+                <h3 class="section-title">
+                    <span class="cn">身体状况</span>
+                    <span class="en">Physical Condition</span>
+                </h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="Physical_disabilities">身体残疾 / Physical Disabilities:</label>
+                        <select id="Physical_disabilities" name="Physical_disabilities" required>
+                            <option value="1">是 / Yes</option>
+                            <option value="2">否 / No</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="Mental_retardation">智力障碍 / Mental Retardation:</label>
+                        <select id="Mental_retardation" name="Mental_retardation" required>
+                            <option value="1">是 / Yes</option>
+                            <option value="2">否 / No</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="Vision_problem">视力问题 / Vision Problem:</label>
+                        <select id="Vision_problem" name="Vision_problem" required>
+                            <option value="1">是 / Yes</option>
+                            <option value="2">否 / No</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="Hearing_problem">听力问题 / Hearing Problem:</label>
+                        <select id="Hearing_problem" name="Hearing_problem" required>
+                            <option value="1">是 / Yes</option>
+                            <option value="2">否 / No</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="Speech_impediment">语言障碍 / Speech Impediment:</label>
+                        <select id="Speech_impediment" name="Speech_impediment" required>
+                            <option value="1">是 / Yes</option>
+                            <option value="2">否 / No</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="difficulty_with_getting_up">起身困难 / Difficulty Getting Up:</label>
+                        <select id="difficulty_with_getting_up" name="difficulty_with_getting_up" required>
+                            <option value="1">是 / Yes</option>
+                            <option value="2">否 / No</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="difficulty_with_stooping">弯腰困难 / Difficulty Stooping:</label>
+                        <select id="difficulty_with_stooping" name="difficulty_with_stooping" required>
+                            <option value="1">是 / Yes</option>
+                            <option value="2">否 / No</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 慢性病史 -->
+            <div class="form-section">
+                <h3 class="section-title">
+                    <span class="cn">慢性病史</span>
+                    <span class="en">Chronic Diseases</span>
+                </h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="new_da007_1_">高血压 / Hypertension:</label>
+                        <select id="new_da007_1_" name="new_da007_1_" required>
+                            <option value="1">是 / Yes</option>
+                            <option value="2">否 / No</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="new_da007_2_">血脂异常 / Dyslipidemia:</label>
+                        <select id="new_da007_2_" name="new_da007_2_" required>
+                            <option value="1">是 / Yes</option>
+                            <option value="2">否 / No</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="new_da007_3_">糖尿病 / Diabetes:</label>
+                        <select id="new_da007_3_" name="new_da007_3_" required>
+                            <option value="1">是 / Yes</option>
+                            <option value="2">否 / No</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="new_da007_4_">癌症 / Cancer:</label>
+                        <select id="new_da007_4_" name="new_da007_4_" required>
+                            <option value="1">是 / Yes</option>
+                            <option value="2">否 / No</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="new_da007_5_">慢性肺病 / Chronic Lung Disease:</label>
+                        <select id="new_da007_5_" name="new_da007_5_" required>
+                            <option value="1">是 / Yes</option>
+                            <option value="2">否 / No</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="new_da007_6_">肝病 / Liver Disease:</label>
+                        <select id="new_da007_6_" name="new_da007_6_" required>
+                            <option value="1">是 / Yes</option>
+                            <option value="2">否 / No</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="new_da007_7_">心脏病 / Heart Disease:</label>
+                        <select id="new_da007_7_" name="new_da007_7_" required>
+                            <option value="1">是 / Yes</option>
+                            <option value="2">否 / No</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="new_da007_8_">中风 / Stroke:</label>
+                        <select id="new_da007_8_" name="new_da007_8_" required>
+                            <option value="1">是 / Yes</option>
+                            <option value="2">否 / No</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="new_da007_9_">肾病 / Kidney Disease:</label>
+                        <select id="new_da007_9_" name="new_da007_9_" required>
+                            <option value="1">是 / Yes</option>
+                            <option value="2">否 / No</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="new_da007_10_">消化系统疾病 / Digestive System Disease:</label>
+                        <select id="new_da007_10_" name="new_da007_10_" required>
+                            <option value="1">是 / Yes</option>
+                            <option value="2">否 / No</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="new_da007_11_">精神问题 / Mental Issues:</label>
+                        <select id="new_da007_11_" name="new_da007_11_" required>
+                            <option value="1">是 / Yes</option>
+                            <option value="2">否 / No</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="new_da007_12_">记忆相关疾病 / Memory-related Disease:</label>
+                        <select id="new_da007_12_" name="new_da007_12_" required>
+                            <option value="1">是 / Yes</option>
+                            <option value="2">否 / No</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="new_da007_13_">关节炎 / Arthritis:</label>
+                        <select id="new_da007_13_" name="new_da007_13_" required>
+                            <option value="1">是 / Yes</option>
+                            <option value="2">否 / No</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="new_da007_14_">哮喘 / Asthma:</label>
+                        <select id="new_da007_14_" name="new_da007_14_" required>
+                            <option value="1">是 / Yes</option>
+                            <option value="2">否 / No</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 添加表单数据保留功能 -->
+            {% if form_data %}
+            <script>
+                window.onload = function() {
+                    const formData = {{ form_data|tojson|safe }};
+                    for (let field in formData) {
+                        const element = document.getElementsByName(field)[0];
+                        if (element) {
+                            if (element.type === 'radio') {
+                                document.querySelector(`input[name="${field}"][value="${formData[field]}"]`).checked = true;
+                            } else {
+                                element.value = formData[field];
+                            }
+                        }
+                    }
+                }
+            </script>
+            {% endif %}
+
+            <div class="form-actions">
+                <button type="submit" class="btn-primary">
+                    <span class="cn">预测风险</span>
+                    <span class="en">Predict Risk</span>
+                </button>
+                <button type="reset" class="btn-secondary">
+                    <span class="cn">重置</span>
+                    <span class="en">Reset</span>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- 结果模态框 -->
+    <div id="result-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>跌倒风险评估报告 / Fall Risk Assessment Report</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="patient-info">
+                    <h3>基本信息 / Basic Information</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <label>姓名 / Name:</label>
+                            <span id="result-name"></span>
+                        </div>
+                        <div class="info-item">
+                            <label>年龄 / Age:</label>
+                            <span id="result-age"></span>
+                        </div>
+                        <div class="info-item">
+                            <label>性别 / Sex:</label>
+                            <span id="result-sex"></span>
+                        </div>
+                        <div class="info-item">
+                            <label>婚姻状况 / Marital Status:</label>
+                            <span id="result-marital"></span>
+                        </div>
+                        <div class="info-item">
+                            <label>居住地 / Residence:</label>
+                            <span id="result-residence"></span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="risk-results">
+                    <div class="risk-item">
+                        <h3>3年内跌倒风险 / 3-Year Fall Risk</h3>
+                        <div class="risk-value" id="risk-2018"></div>
+                    </div>
+                    <div class="risk-item">
+                        <h3>5年内跌倒风险 / 5-Year Fall Risk</h3>
+                        <div class="risk-value" id="risk-2020"></div>
+                    </div>
+                </div>
+                
+                <div class="recommendations">
+                    <h3>预防建议 / Recommendations</h3>
+                    <div class="recommendations-list" id="recommendations-list">
+                        <!-- 建议会通过JavaScript动态添加 -->
+                    </div>
+                </div>
+                
+                <div class="report-footer">
+                    <p>评估日期 / Assessment Date：<span id="report-date"></span></p>
+                    <p>注：本评估结果仅供参考，请结合专业医生建议进行预防。<br>Note: This assessment is for reference only. Please consult a professional doctor for prevention advice.</p>
+                </div>
+                
+                <div class="modal-actions">
+                    <button id="download-pdf">下载PDF报告 / Download PDF</button>
+                    <button id="print-result">打印结果 / Print</button>
+                    <button id="close-modal">返回预测页面 / Back to Prediction</button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <p style="font-size: 12px; text-align: center;">襄阳市中心医院护理团队</p>
+            </div>
+        </div>
+    </div>
+    
+    <footer style="text-align: center; font-size: 12px; margin-top: 20px;">
+        襄阳市中心医院护理团队
+    </footer>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+    <!-- 添加相应的 CSS -->
+    <style>
+    .validation-notice {
+        background-color: #e3f2fd;
+        padding: 10px;
+        margin-bottom: 20px;
+        border-radius: 4px;
+        border-left: 4px solid #2196f3;
+    }
+
+    .validation-notice p {
+        margin: 0;
+        color: #1565c0;
+        font-size: 14px;
+    }
+
+    .section-title .en {
+        display: none;
+        font-size: 0.9em;
+        color: #666;
+    }
+
+    .section-title.english .cn {
+        display: none;
+    }
+
+    .section-title.english .en {
+        display: inline;
+    }
+
+    .btn-primary {
+        background-color: #2ecc71;
+        color: white;
+    }
+
+    .btn-secondary {
+        background-color: #e74c3c;
+        color: white;
+    }
+
+    .form-actions {
+        position: sticky;
+        bottom: 20px;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 15px 0;
+        border-top: 1px solid #eee;
+    }
+    </style>
+</body>
+</html> 

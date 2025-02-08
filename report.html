@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>跌倒风险评估报告 / Fall Risk Assessment Report</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>跌倒风险评估报告 / Fall Risk Assessment Report</h1>
+        <div class="report-content">
+            <div class="patient-info">
+                <h3>基本信息 / Basic Information</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <label>姓名 / Name:</label>
+                        <span id="result-name">{{ name }}</span>
+                    </div>
+                    <div class="info-item">
+                        <label>年龄 / Age:</label>
+                        <span id="result-age">{{ age }}</span>
+                    </div>
+                    <div class="info-item">
+                        <label>性别 / Sex:</label>
+                        <span id="result-sex">{{ sex }}</span>
+                    </div>
+                    <div class="info-item">
+                        <label>婚姻状况 / Marital Status:</label>
+                        <span id="result-marital">{{ marital_status }}</span>
+                    </div>
+                    <div class="info-item">
+                        <label>居住地 / Residence:</label>
+                        <span id="result-residence">{{ residence }}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="risk-results">
+                <div class="risk-item">
+                    <h3>3年内跌倒风险 / 3-Year Fall Risk</h3>
+                    <div class="risk-value">{{ risk_2018 }}</div>
+                </div>
+                <div class="risk-item">
+                    <h3>5年内跌倒风险 / 5-Year Fall Risk</h3>
+                    <div class="risk-value">{{ risk_2020 }}</div>
+                </div>
+            </div>
+            
+            <div class="recommendations">
+                <h3>预防建议 / Recommendations</h3>
+                <ul>
+                    {% for recommendation in recommendations %}
+                    <li>{{ recommendation }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            
+            <div class="report-footer">
+                <p>评估日期 / Assessment Date：<span>{{ report_date }}</span></p>
+                <p>注：本评估结果仅供参考，请结合专业医生建议进行预防。<br>Note: This assessment is for reference only. Please consult a professional doctor for prevention advice.</p>
+            </div>
+        </div>
+        <footer style="text-align: center; font-size: 12px; margin-top: 20px;">
+            襄阳市中心医院护理团队
+        </footer>
+    </div>
+</body>
+</html> 
